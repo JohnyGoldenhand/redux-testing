@@ -1,23 +1,34 @@
 import React, { MouseEvent, useState } from "react";
-import { useDispatch } from "react-redux";
-import { nanoid } from "@reduxjs/toolkit";
+import { useDispatch, useSelector } from "react-redux";
 
 import { addPost } from "./postsSlice";
+import { selectUsers } from "../users/usersSlice";
 
 export const AddPostForm = () => {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
+  const [userId, setuserId] = useState<string>("");
 
   const dispatch = useDispatch();
+
+  const users = useSelector(selectUsers);
 
   const onFormSubmit = (e: MouseEvent<HTMLButtonElement>) => {
     if (title && content) {
       e.preventDefault();
-      dispatch(addPost(title, content));
+      dispatch(addPost(title, content, userId));
       setTitle("");
       setContent("");
     }
   };
+
+  const userOptions = users.map((user) => (
+    <option key={user.id} value={user.id}>
+      {user.name}
+    </option>
+  ));
+
+  const canSave = Boolean(title) && Boolean(content) && Boolean(userId);
 
   return (
     <div>
@@ -31,6 +42,15 @@ export const AddPostForm = () => {
           value={title}
           onChange={(e) => setTitle(e.target.value)}
         />
+        <label>Author:</label>
+        <select
+          id="postAuthor"
+          value={userId}
+          onChange={(e) => setuserId(e.target.value)}
+        >
+          <option value="" />
+          {userOptions}
+        </select>
         <label>Content:</label>
         <textarea
           id="postContent"
@@ -38,7 +58,7 @@ export const AddPostForm = () => {
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
-        <button type="button" onClick={onFormSubmit}>
+        <button type="button" onClick={onFormSubmit} disabled={!canSave}>
           Save Post
         </button>
       </form>

@@ -5,10 +5,15 @@ interface PostProps {
   id: string;
   title: string;
   content: string;
+  userId?: string;
 }
 
 const initialState: Array<PostProps> = [
-  { id: "1", title: "Learning Redux Toolkit", content: "Nice Things" },
+  {
+    id: "1",
+    title: "Learning Redux Toolkit",
+    content: "Nice Things",
+  },
   { id: "2", title: "Slices", content: "Pizza" },
 ];
 
@@ -21,12 +26,13 @@ export const postsSlice = createSlice({
         state.push(action.payload);
       },
 
-      prepare: (title, content) => {
+      prepare: (title, content, userId) => {
         return {
           payload: {
             id: nanoid(),
             title,
             content,
+            userId,
           },
         };
       },
